@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Racing Typing Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* Login/Signup Modal */
+        #authModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        #authModal.hidden {
+            display: none;
+        }
+
+        .auth-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            min-width: 400px;
+        }
+
+        .auth-container h2 {
+            color: #fff;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #fff;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #4ECDC4;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: #4ECDC4;
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #45B7D1;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .error-message {
+            background: rgba(255, 107, 107, 0.3);
+            color: #FF6B6B;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Home Screen */
+        #homeScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10, 10, 30, 0.95), rgba(30, 10, 50, 0.95));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 900;
+        }
+
+        #homeScreen.hidden {
+            display: none;
+        }
+
+        .home-container {
+            text-align: center;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        .home-container h1 {
+            color: #FFD700;
+            font-size: 56px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .home-container p {
+            color: #fff;
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .car-preview {
+            margin: 40px 0;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+        }
+
+        .car-preview h3 {
+            color: #4ECDC4;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .home-color-options {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .home-color-option {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 4px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .home-color-option:hover {
+            transform: scale(1.2);
+        }
+
+        .home-color-option.selected {
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            transform: scale(1.15);
+        }
+
+        .home-color-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+        }
+
+        #startRaceBtn {
+            padding: 20px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4ECDC4, #45B7D1);
+            border: none;
+            border-radius: 50px;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.4);
+            margin-top: 30px;
+        }
+
+        #startRaceBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(78, 205, 196, 0.6);
+        }
+
+        #startRaceBtn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Countdown Overlay */
+        #countdownOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        #countdownOverlay.show {
+            display: flex;
+        }
+
+        #countdownNumber {
+            font-size: 200px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Game UI */
+        #ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            pointer-events: none;
+        }
+
+        #typingArea {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(30, 30, 30, 0.9));
+            padding: 30px 40px;
+            border-radius: 15px;
+            min-width: 80%;
+            max-width: 90%;
+            text-align: left;
+            pointer-events: all;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        #typingArea.disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        #phrase {
+            font-size: 26px;
+            color: #fff;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            line-height: 1.6;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            min-height: 120px;
+        }
+
+        .char {
+            display: inline;
+            position: relative;
+            transition: all 0.1s;
+        }
+
+        .char.correct {
+            color: #4ECDC4;
+        }
+
+        .char.incorrect {
+            color: #FF6B6B;
+            background: rgba(255, 107, 107, 0.3);
+            border-radius: 2px;
+        }
+
+        .char.cursor {
+            background: rgba(78, 205, 196, 0.4);
+            border-left: 3px solid #4ECDC4;
+            animation: blink 1s infinite;
+            padding-left: 2px;
+        }
+
+        .char.cursor.error {
+            background: rgba(255, 107, 107, 0.4);
+            border-left-color: #FF6B6B;
+        }
+
+        @keyframes blink {
+            0%, 49% { border-left-color: inherit; }
+            50%, 100% { border-left-color: transparent; }
+        }
+
+        #inputContainer {
+            position: relative;
+            display: none; /* Hidden - we use direct keyboard input */
+        }
+
+        #input {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            border: 2px solid #4ECDC4;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            outline: none;
+            font-family: 'Courier New', monospace;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #input:focus {
+            border-color: #45B7D1;
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+        }
+
+        #progressBar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin-top: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #progressFill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ECDC4, #45B7D1, #FFD700);
+            width: 0%;
+            transition: width 0.2s;
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+        }
+
+        #scoreboard {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            color: #fff;
+            max-width: 350px;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+        }
+
+        #scoreboard h3 {
+            margin-bottom: 15px;
+            color: #4ECDC4;
+            font-size: 24px;
+            border-bottom: 2px solid rgba(78, 205, 196, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .player-score {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .player-score:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .player-score .name {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .player-score .bot-badge {
+            font-size: 10px;
+            background: rgba(255, 165, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #FFA500;
+        }
+
+        .player-score .progress-text {
+            color: #4ECDC4;
+            font-weight: bold;
+        }
+
+        #stats {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            color: #fff;
+            min-width: 250px;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .stat-label {
+            color: #FFA07A;
+            font-weight: bold;
+        }
+
+        .stat-value {
+            color: #4ECDC4;
+            font-weight: bold;
+        }
+
+        #colorPicker {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            pointer-events: all;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+        }
+
+        #colorPicker h4 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.15);
+        }
+
+        .color-option.selected {
+            border-color: #fff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+            transform: scale(1.1);
+        }
+
+        #raceFinishBanner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 50px 80px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+            z-index: 998;
+            display: none;
+            text-align: center;
+        }
+
+        #raceFinishBanner.show {
+            display: block;
+            animation: bounceIn 0.6s;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        #raceFinishBanner h2 {
+            color: #FFD700;
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #raceFinishBanner p {
+            color: #fff;
+            font-size: 24px;
+        }
+
+        #userInfo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            color: #fff;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+        }
+
+        #userInfo h4 {
+            color: #4ECDC4;
+            margin-bottom: 8px;
+            font-size: 20px;
+        }
+
+        #userInfo p {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        #logoutBtn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: rgba(255, 107, 107, 0.3);
+            border: 1px solid #FF6B6B;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        #logoutBtn:hover {
+            background: rgba(255, 107, 107, 0.5);
+        }
+
+        #waitingMessage {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            color: #fff;
+            font-size: 24px;
+            z-index: 500;
+            display: none;
+        }
+
+        #waitingMessage.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login/Signup Modal -->
+    <div id="authModal">
+        <div class="auth-container">
+            <h2 id="authTitle">Login to Race</h2>
+            <div class="error-message" id="errorMessage"></div>
+
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submitBtn">Login</button>
+                <button type="button" class="btn btn-secondary" id="toggleAuthMode">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Home Screen -->
+    <div id="homeScreen" class="hidden">
+        <div class="home-container">
+            <h1>🏎️ Type Racer 🏁</h1>
+            <p>Welcome back, <strong><span id="homeUsername"></span></strong>!</p>
+
+            <div class="car-preview">
+                <h3>Choose Your Car Color</h3>
+                <p style="color: #aaa; font-size: 14px;">Select a color for your racing car</p>
+                <div class="home-color-options">
+                    <div class="home-color-option" style="background: #FF6B6B;" data-color="#FF6B6B"></div>
+                    <div class="home-color-option" style="background: #4ECDC4;" data-color="#4ECDC4"></div>
+                    <div class="home-color-option" style="background: #45B7D1;" data-color="#45B7D1"></div>
+                    <div class="home-color-option" style="background: #FFA07A;" data-color="#FFA07A"></div>
+                    <div class="home-color-option" style="background: #98D8C8;" data-color="#98D8C8"></div>
+                    <div class="home-color-option" style="background: #F7DC6F;" data-color="#F7DC6F"></div>
+                    <div class="home-color-option" style="background: #BB8FCE;" data-color="#BB8FCE"></div>
+                    <div class="home-color-option" style="background: #FF69B4;" data-color="#FF69B4"></div>
+                </div>
+            </div>
+
+            <button id="startRaceBtn">Start Racing!</button>
+        </div>
+    </div>
+
+    <!-- Countdown Overlay -->
+    <div id="countdownOverlay">
+        <div id="countdownNumber">3</div>
+    </div>
+
+    <!-- Waiting Message -->
+    <div id="waitingMessage">
+        Waiting for race to start...
+    </div>
+
+    <!-- Game Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Race Finish Banner -->
+    <div id="raceFinishBanner">
+        <h2 id="winnerText"><� RACE FINISHED! <�</h2>
+        <p id="winnerName"></p>
+    </div>
+
+    <!-- Game UI -->
+    <div id="ui">
+        <div id="userInfo">
+            <h4 id="usernameDisplay"></h4>
+            <p>Avg WPM: <span id="avgWpm">0</span> | High Score: <span id="highScore">0</span></p>
+            <button id="logoutBtn">Logout</button>
+        </div>
+
+        <div id="scoreboard">
+            <h3>Race Positions</h3>
+            <div id="playerList"></div>
+        </div>
+
+        <div id="colorPicker">
+            <h4>Car Color</h4>
+            <div class="color-options">
+                <div class="color-option selected" style="background: #FF6B6B;" data-color="#FF6B6B"></div>
+                <div class="color-option" style="background: #4ECDC4;" data-color="#4ECDC4"></div>
+                <div class="color-option" style="background: #45B7D1;" data-color="#45B7D1"></div>
+                <div class="color-option" style="background: #FFA07A;" data-color="#FFA07A"></div>
+                <div class="color-option" style="background: #98D8C8;" data-color="#98D8C8"></div>
+                <div class="color-option" style="background: #F7DC6F;" data-color="#F7DC6F"></div>
+                <div class="color-option" style="background: #BB8FCE;" data-color="#BB8FCE"></div>
+                <div class="color-option" style="background: #FF69B4;" data-color="#FF69B4"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="typingArea" class="disabled">
+        <div id="phrase"></div>
+        <div id="inputContainer">
+            <input type="text" id="input" placeholder="Wait for the race to start..." autocomplete="off" disabled>
+        </div>
+        <div id="progressBar">
+            <div id="progressFill"></div>
+        </div>
+    </div>
+
+    <div id="stats">
+        <div class="stat-row">
+            <span class="stat-label">WPM:</span>
+            <span class="stat-value" id="wpm">0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Accuracy:</span>
+            <span class="stat-value" id="accuracy">100%</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Progress:</span>
+            <span class="stat-value" id="progress">0%</span>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Authentication state
+        let currentUser = null;
+        let isLoginMode = true;
+        let authToken = null;
+
+        // DOM elements
+        const authModal = document.getElementById('authModal');
+        const authForm = document.getElementById('authForm');
+        const authTitle = document.getElementById('authTitle');
+        const submitBtn = document.getElementById('submitBtn');
+        const toggleAuthModeBtn = document.getElementById('toggleAuthMode');
+        const errorMessage = document.getElementById('errorMessage');
+        const homeScreen = document.getElementById('homeScreen');
+        const input = document.getElementById('input');
+        const typingArea = document.getElementById('typingArea');
+        const countdownOverlay = document.getElementById('countdownOverlay');
+        const countdownNumber = document.getElementById('countdownNumber');
+        const waitingMessage = document.getElementById('waitingMessage');
+
+        let selectedCarColor = null;
+
+        // Check for stored token on page load
+        async function checkStoredAuth() {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                try {
+                    const response = await fetch('/api/verify', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        currentUser = data.user;
+                        authToken = token;
+                        authModal.classList.add('hidden');
+                        showHomeScreen();
+                    } else {
+                        // Invalid token, remove it
+                        localStorage.removeItem('authToken');
+                    }
+                } catch (error) {
+                    console.error('Token verification failed:', error);
+                    localStorage.removeItem('authToken');
+                }
+            }
+        }
+
+        // Call on page load
+        checkStoredAuth();
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('authToken');
+            location.reload();
+        }
+
+        // Toggle between login and signup
+        toggleAuthModeBtn.addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            if (isLoginMode) {
+                authTitle.textContent = 'Login to Race';
+                submitBtn.textContent = 'Login';
+                toggleAuthModeBtn.textContent = 'Create Account';
+            } else {
+                authTitle.textContent = 'Create Account';
+                submitBtn.textContent = 'Sign Up';
+                toggleAuthModeBtn.textContent = 'Back to Login';
+            }
+            errorMessage.classList.remove('show');
+        });
+
+        // Handle authentication form submit
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const endpoint = isLoginMode ? '/api/login' : '/api/signup';
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentUser = data.user;
+                    authToken = data.token;
+
+                    // Store token in localStorage
+                    localStorage.setItem('authToken', data.token);
+
+                    authModal.classList.add('hidden');
+                    showHomeScreen();
+                } else {
+                    errorMessage.textContent = data.error;
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Connection error. Please try again.';
+                errorMessage.classList.add('show');
+            }
+        });
+
+        // Three.js setup
+        const canvas = document.getElementById('gameCanvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x87CEEB);
+        renderer.shadowMap.enabled = true;
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 20, 10);
+        directionalLight.castShadow = true;
+        scene.add(directionalLight);
+
+        // Create racing track
+        function createTrack() {
+            const trackGroup = new THREE.Group();
+
+            // Main track surface
+            const trackGeometry = new THREE.BoxGeometry(15, 0.2, 100);
+            const trackMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+            const track = new THREE.Mesh(trackGeometry, trackMaterial);
+            track.receiveShadow = true;
+            trackGroup.add(track);
+
+            // White lane lines
+            for (let i = -40; i < 50; i += 10) {
+                const lineGeometry = new THREE.BoxGeometry(0.3, 0.21, 4);
+                const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                const line = new THREE.Mesh(lineGeometry, lineMaterial);
+                line.position.set(0, 0, i);
+                trackGroup.add(line);
+            }
+
+            // Side barriers
+            const barrierGeometry = new THREE.BoxGeometry(1, 2, 100);
+            const barrierMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+
+            const leftBarrier = new THREE.Mesh(barrierGeometry, barrierMaterial);
+            leftBarrier.position.set(-8, 1, 0);
+            trackGroup.add(leftBarrier);
+
+            const rightBarrier = new THREE.Mesh(barrierGeometry, barrierMaterial);
+            rightBarrier.position.set(8, 1, 0);
+            trackGroup.add(rightBarrier);
+
+            // Checkered flag at finish line
+            const flagGeometry = new THREE.PlaneGeometry(10, 5);
+            const flagTexture = createCheckeredTexture();
+            const flagMaterial = new THREE.MeshBasicMaterial({ map: flagTexture, side: THREE.DoubleSide });
+            const flag = new THREE.Mesh(flagGeometry, flagMaterial);
+            flag.position.set(0, 5, 50);
+            trackGroup.add(flag);
+
+            // Ground
+            const groundGeometry = new THREE.PlaneGeometry(100, 150);
+            const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x228B22 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -0.2;
+            ground.receiveShadow = true;
+            trackGroup.add(ground);
+
+            return trackGroup;
+        }
+
+        // Create checkered flag texture
+        function createCheckeredTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            const squareSize = 64;
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    ctx.fillStyle = (i + j) % 2 === 0 ? '#000000' : '#ffffff';
+                    ctx.fillRect(i * squareSize, j * squareSize, squareSize, squareSize);
+                }
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            return texture;
+        }
+
+        const track = createTrack();
+        scene.add(track);
+
+        // Camera position
+        camera.position.set(0, 8, -45);
+        camera.lookAt(0, 0, 0);
+
+        // Player cars in 3D space
+        const playerMeshes = new Map();
+        const playerData = new Map();
+        let myCarMesh = null;
+
+        // Create car mesh
+        function createCarMesh(color) {
+            const carGroup = new THREE.Group();
+
+            // Car body
+            const bodyGeometry = new THREE.BoxGeometry(2, 1, 3);
+            const bodyMaterial = new THREE.MeshStandardMaterial({ color: color });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.castShadow = true;
+            body.position.y = 0.5;
+            carGroup.add(body);
+
+            // Car top
+            const topGeometry = new THREE.BoxGeometry(1.5, 0.8, 1.5);
+            const topMaterial = new THREE.MeshStandardMaterial({ color: color });
+            const top = new THREE.Mesh(topGeometry, topMaterial);
+            top.castShadow = true;
+            top.position.set(0, 1.3, -0.3);
+            carGroup.add(top);
+
+            // Wheels
+            const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
+            const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+
+            const wheelPositions = [
+                [-1.2, 0.4, 1],
+                [1.2, 0.4, 1],
+                [-1.2, 0.4, -1],
+                [1.2, 0.4, -1]
+            ];
+
+            wheelPositions.forEach(pos => {
+                const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+                wheel.rotation.z = Math.PI / 2;
+                wheel.position.set(...pos);
+                wheel.castShadow = true;
+                carGroup.add(wheel);
+            });
+
+            return carGroup;
+        }
+
+        // Socket.io connection
+        let socket;
+        let playerId = null;
+        let currentText = '';
+        let currentIndex = 0; // Cursor position
+        let startTime = null;
+        let correctChars = 0;
+        let totalKeyPresses = 0;
+        let raceState = 'waiting';
+        let hasError = false; // Track if current position has an error
+
+        // Show home screen
+        function showHomeScreen() {
+            homeScreen.classList.remove('hidden');
+            document.getElementById('homeUsername').textContent = currentUser.username;
+
+            // Set initial selected color
+            selectedCarColor = currentUser.color || '#FF6B6B';
+
+            // Setup color picker on home screen
+            const homeColorOptions = document.querySelectorAll('.home-color-option');
+            homeColorOptions.forEach(option => {
+                const color = option.getAttribute('data-color');
+                if (color === selectedCarColor) {
+                    option.classList.add('selected');
+                }
+
+                option.addEventListener('click', async () => {
+                    // Remove selected from all
+                    homeColorOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+
+                    selectedCarColor = color;
+
+                    // Save to database immediately
+                    try {
+                        await fetch('/api/changeColor', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${authToken}`
+                            },
+                            body: JSON.stringify({
+                                username: currentUser.username,
+                                color: color
+                            })
+                        });
+                        currentUser.color = color;
+                    } catch (error) {
+                        console.error('Failed to save color:', error);
+                    }
+                });
+            });
+
+            // Setup start race button
+            document.getElementById('startRaceBtn').addEventListener('click', () => {
+                homeScreen.classList.add('hidden');
+                initGame();
+            });
+        }
+
+        function initGame() {
+            // Display user info
+            document.getElementById('usernameDisplay').textContent = currentUser.username;
+            document.getElementById('highScore').textContent = currentUser.highScore || 0;
+            document.getElementById('avgWpm').textContent = currentUser.averageWPM || 0;
+
+            // Add logout button listener
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+
+            // Initialize socket connection
+            socket = io();
+
+            // Authenticate with server
+            socket.emit('authenticate', { username: currentUser.username });
+
+            // Initialize game
+            socket.on('init', (data) => {
+                playerId = data.playerId;
+                currentText = data.text;
+                raceState = data.raceState;
+                displayText(currentText);
+
+                // Create my car
+                myCarMesh = createCarMesh(currentUser.color);
+                myCarMesh.position.set(0, 0.5, -50);
+                scene.add(myCarMesh);
+                playerMeshes.set(playerId, myCarMesh);
+                playerData.set(playerId, { progress: 0, username: currentUser.username, isBot: false });
+
+                // Add existing players
+                data.players.forEach(player => {
+                    if (player.id !== playerId) {
+                        addPlayer(player);
+                    }
+                });
+
+                // Update color picker
+                updateColorPicker(currentUser.color);
+
+                // Show waiting message if not enough players
+                if (data.players.length < 5) {
+                    waitingMessage.classList.add('show');
+                }
+
+                updateScoreboard();
+            });
+
+            // Player joined
+            socket.on('playerJoined', (player) => {
+                addPlayer(player);
+                updateScoreboard();
+                waitingMessage.classList.remove('show');
+            });
+
+            // Player left
+            socket.on('playerLeft', (id) => {
+                const mesh = playerMeshes.get(id);
+                if (mesh) {
+                    scene.remove(mesh);
+                    playerMeshes.delete(id);
+                    playerData.delete(id);
+                }
+                updateScoreboard();
+            });
+
+            // Countdown
+            socket.on('raceCountdown', (data) => {
+                raceState = 'countdown';
+                waitingMessage.classList.remove('show');
+                countdownOverlay.classList.add('show');
+                countdownNumber.textContent = data.countdown;
+
+                if (data.countdown === 0) {
+                    countdownNumber.textContent = 'GO!';
+                    setTimeout(() => {
+                        countdownOverlay.classList.remove('show');
+                    }, 500);
+                }
+            });
+
+            // Race start
+            socket.on('raceStart', () => {
+                raceState = 'racing';
+                typingArea.classList.remove('disabled');
+                startTime = Date.now();
+            });
+
+            // Player typing progress
+            socket.on('playerTyping', (data) => {
+                const mesh = playerMeshes.get(data.id);
+                if (mesh && data.position) {
+                    mesh.position.z = data.position.z;
+                }
+
+                const pData = playerData.get(data.id);
+                if (pData) {
+                    pData.progress = data.progress || 0;
+                }
+
+                updateScoreboard();
+            });
+
+            // Player color changed
+            socket.on('playerColorChanged', (data) => {
+                const mesh = playerMeshes.get(data.id);
+                if (mesh) {
+                    mesh.children.forEach(child => {
+                        if (child.material && (child.geometry.type === 'BoxGeometry')) {
+                            child.material.color.setStyle(data.color);
+                        }
+                    });
+                }
+            });
+
+            // Race finished
+            socket.on('raceFinished', (data) => {
+                const banner = document.getElementById('raceFinishBanner');
+                const winnerName = document.getElementById('winnerName');
+                winnerName.textContent = `${data.username} finished with ${data.score} points!`;
+                banner.classList.add('show');
+
+                setTimeout(() => {
+                    banner.classList.remove('show');
+                }, 3000);
+            });
+
+            // Race reset
+            socket.on('raceReset', () => {
+                location.reload();
+            });
+        }
+
+        // Add player to scene
+        function addPlayer(player) {
+            const mesh = createCarMesh(player.color);
+            mesh.position.set(player.position.x, player.position.y, player.position.z);
+            scene.add(mesh);
+            playerMeshes.set(player.id, mesh);
+            playerData.set(player.id, {
+                progress: player.progress || 0,
+                username: player.username,
+                isBot: player.isBot || false
+            });
+        }
+
+        // Display text with cursor
+        function displayText(text) {
+            const phraseEl = document.getElementById('phrase');
+            phraseEl.innerHTML = text.split('').map((char, i) => {
+                const classes = [];
+                if (i === currentIndex) classes.push('cursor');
+                if (i < currentIndex) classes.push('correct');
+                return `<span class="char ${classes.join(' ')}" data-index="${i}">${char === ' ' ? '&nbsp;' : char}</span>`;
+            }).join('');
+        }
+
+        // Update display
+        function updateDisplay() {
+            const chars = document.querySelectorAll('.char');
+            chars.forEach((char, i) => {
+                char.className = 'char';
+
+                if (i < currentIndex) {
+                    char.classList.add('correct');
+                } else if (i === currentIndex) {
+                    char.classList.add('cursor');
+                    if (hasError) {
+                        char.classList.add('error');
+                    }
+                }
+            });
+        }
+
+        // Color picker functionality
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const color = option.getAttribute('data-color');
+
+                document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+
+                if (myCarMesh) {
+                    myCarMesh.children.forEach(child => {
+                        if (child.material && (child.geometry.type === 'BoxGeometry')) {
+                            child.material.color.setStyle(color);
+                        }
+                    });
+                }
+
+                currentUser.color = color;
+
+                if (socket) {
+                    socket.emit('changeColor', { color: color });
+                }
+            });
+        });
+
+        function updateColorPicker(color) {
+            document.querySelectorAll('.color-option').forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.getAttribute('data-color') === color) {
+                    opt.classList.add('selected');
+                }
+            });
+        }
+
+        // Input handling - CURSOR BASED (Document level, no input box)
+        document.addEventListener('keydown', (e) => {
+            if (raceState !== 'racing') return;
+
+            // Prevent default for space to avoid scrolling
+            if (e.key === ' ') {
+                e.preventDefault();
+            }
+
+            // Ignore backspace, arrow keys, and other non-character keys
+            if (e.key === 'Backspace' || e.key.length > 1) {
+                e.preventDefault();
+                return;
+            }
+
+            // Only accept single character keys
+            if (e.key.length === 1) {
+                totalKeyPresses++;
+
+                // Check if typed character matches
+                if (e.key === currentText[currentIndex]) {
+                    // Correct character
+                    correctChars++;
+                    currentIndex++;
+                    hasError = false; // Clear error state
+
+                    // Calculate progress
+                    const progress = (currentIndex / currentText.length) * 100;
+                    document.getElementById('progressFill').style.width = progress + '%';
+                    document.getElementById('progress').textContent = Math.round(progress) + '%';
+
+                    // Update my car position
+                    if (myCarMesh) {
+                        myCarMesh.position.z = -50 + progress;
+                    }
+
+                    // Update stats
+                    updateStats();
+
+                    // Send typing progress
+                    if (socket) {
+                        socket.emit('typing', {
+                            currentWord: currentText.substring(0, currentIndex),
+                            isTyping: true,
+                            progress: progress
+                        });
+                    }
+
+                    // Check completion
+                    if (currentIndex >= currentText.length) {
+                        completeRace();
+                    }
+
+                    updateDisplay();
+                } else {
+                    // Wrong character - cursor stays in place and turns red
+                    hasError = true;
+                    updateDisplay();
+                }
+            }
+        });
+
+        // Complete race
+        function completeRace() {
+            if (raceState !== 'racing') return;
+
+            const timeElapsed = (Date.now() - startTime) / 1000;
+            const wpm = Math.round((currentText.length / 5) / (timeElapsed / 60));
+            const score = Math.round((currentText.length / timeElapsed) * 10);
+
+            raceState = 'finished';
+            typingArea.classList.add('disabled');
+
+            if (socket) {
+                socket.emit('raceComplete', {
+                    score: score,
+                    wpm: wpm,
+                    position: 1 // TODO: Calculate actual position
+                });
+            }
+        }
+
+        // Update stats
+        function updateStats() {
+            if (startTime) {
+                const timeElapsed = (Date.now() - startTime) / 1000 / 60;
+                const wordsTyped = currentIndex / 5; // Average 5 chars per word
+                const wpm = Math.round(wordsTyped / timeElapsed) || 0;
+                document.getElementById('wpm').textContent = wpm;
+            }
+
+            const accuracy = totalKeyPresses > 0 ? Math.round((correctChars / totalKeyPresses) * 100) : 100;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        // Update scoreboard
+        function updateScoreboard() {
+            const playerList = document.getElementById('playerList');
+
+            // Sort players by progress
+            const sortedPlayers = Array.from(playerData.entries())
+                .sort((a, b) => (b[1].progress || 0) - (a[1].progress || 0));
+
+            playerList.innerHTML = sortedPlayers
+                .map(([id, data], index) => {
+                    const botBadge = data.isBot ? '<span class="bot-badge">BOT</span>' : '';
+                    const position = index + 1;
+                    return `
+                        <div class="player-score">
+                            <span class="name">
+                                ${position}. ${data.username} ${botBadge}
+                            </span>
+                            <span class="progress-text">${Math.round(data.progress || 0)}%</span>
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Update camera to follow player
+            if (myCarMesh) {
+                camera.position.z = myCarMesh.position.z - 5;
+                camera.lookAt(0, 0, myCarMesh.position.z + 10);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

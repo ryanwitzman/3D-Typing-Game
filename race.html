@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Type Racer - Race</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/race.css">
+</head>
+<body>
+    <!-- Countdown Overlay -->
+    <div id="countdownOverlay">
+        <div id="countdownNumber">3</div>
+    </div>
+
+    <!-- Waiting Message -->
+    <div id="waitingMessage">
+        <p>Waiting for players to join...</p>
+        <div class="loading-dots">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- Game Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Race Finish Banner -->
+    <div id="raceFinishBanner">
+        <h2><� RACE FINISHED! <�</h2>
+        <p id="winnerName"></p>
+        <button id="newRaceBtn" class="btn">Start New Race</button>
+    </div>
+
+    <!-- Game UI -->
+    <div id="ui">
+        <div id="userInfo">
+            <h4 id="raceUsername"></h4>
+            <button id="leaveRaceBtn" class="btn btn-small">Leave Race</button>
+        </div>
+
+        <div id="scoreboard">
+            <h3>Race Positions</h3>
+            <div id="playerList"></div>
+        </div>
+    </div>
+
+    <!-- Typing Area -->
+    <div id="typingArea" class="disabled">
+        <div id="phrase"></div>
+        <div id="progressBar">
+            <div id="progressFill"></div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div id="stats">
+        <div class="stat-row">
+            <span class="stat-label">WPM:</span>
+            <span class="stat-value" id="wpm">0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Accuracy:</span>
+            <span class="stat-value" id="accuracy">100%</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Progress:</span>
+            <span class="stat-value" id="progress">0%</span>
+        </div>
+    </div>
+
+    <!-- User Progress Stats -->
+    <div id="userProgress">
+        <h4>Your Stats</h4>
+        <div class="progress-stat">
+            <span class="progress-label">Avg WPM:</span>
+            <span class="progress-value" id="userAvgWpm">-</span>
+        </div>
+        <div class="progress-stat">
+            <span class="progress-label">Total Races:</span>
+            <span class="progress-value" id="userTotalRaces">-</span>
+        </div>
+        <div class="progress-stat">
+            <span class="progress-label">High Score (WPM):</span>
+            <span class="progress-value" id="userHighScore">-</span>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/3d-scene.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/race.js"></script>
+</body>
+</html>

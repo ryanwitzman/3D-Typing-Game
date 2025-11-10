@@ -1,0 +1,678 @@
+/* Canvas */
+#gameCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70%;
+    z-index: 1;
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    transition: filter 0.1s ease;
+}
+
+#gameCanvas.speed-boost {
+    animation: speedBoostEffect 0.3s ease-out;
+}
+
+@keyframes speedBoostEffect {
+    0% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(1.3) saturate(1.3);
+    }
+    100% {
+        filter: brightness(1);
+    }
+}
+
+/* Screen shake effect for errors - DISABLED */
+/* @keyframes screenShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+#typingArea.error-shake {
+    animation: screenShake 0.4s ease;
+} */
+
+/* Countdown Overlay */
+#countdownOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70%;
+    background: rgba(0, 0, 0, 0.3);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+}
+
+#countdownOverlay.show {
+    display: flex;
+}
+
+#countdownNumber {
+    font-size: 200px;
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow:
+        0 0 30px rgba(255, 215, 0, 1),
+        0 0 60px rgba(255, 215, 0, 0.8),
+        0 0 90px rgba(255, 215, 0, 0.6),
+        0 4px 8px rgba(0, 0, 0, 0.8);
+    animation: countdownPulse 1s ease-in-out;
+    -webkit-text-stroke: 2px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes countdownPulse {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Waiting Message */
+#waitingMessage {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 500;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 40px 60px;
+    border-radius: 20px;
+    border: 2px solid rgba(78, 205, 196, 0.5);
+    display: none;
+}
+
+#waitingMessage.show {
+    display: block;
+}
+
+#waitingMessage p {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.loading-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.loading-dots span {
+    width: 12px;
+    height: 12px;
+    background: #4ECDC4;
+    border-radius: 50%;
+    animation: loadingDot 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes loadingDot {
+    0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Race Finish Banner */
+#raceFinishBanner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 40px 80px;
+    border-radius: 20px;
+    border: 3px solid #FFD700;
+    text-align: center;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+}
+
+#raceFinishBanner.show {
+    display: block;
+    animation: bannerAppear 0.5s ease-out;
+}
+
+@keyframes bannerAppear {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+#raceFinishBanner h2 {
+    font-size: 48px;
+    color: #FFD700;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    margin-bottom: 20px;
+    animation: textGlow 2s ease-in-out infinite;
+}
+
+@keyframes textGlow {
+    0%, 100% {
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    }
+    50% {
+        text-shadow: 0 0 50px rgba(255, 215, 0, 1);
+    }
+}
+
+#winnerName {
+    font-size: 32px;
+    color: #4ECDC4;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#newRaceBtn {
+    margin-top: 20px;
+    padding: 15px 40px;
+    font-size: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 2px solid #FFD700;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+}
+
+#newRaceBtn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* UI Elements */
+#ui {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    pointer-events: none;
+}
+
+#ui > * {
+    pointer-events: auto;
+}
+
+#userInfo {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+#raceUsername {
+    color: #4ECDC4;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+#scoreboard {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    min-width: 250px;
+    backdrop-filter: blur(10px);
+}
+
+#scoreboard h3 {
+    color: #FFD700;
+    font-size: 18px;
+    margin-bottom: 15px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#playerList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.player-score {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.player-score:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(78, 205, 196, 0.3);
+}
+
+.player-score .name {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.player-score .progress-text {
+    color: #4ECDC4;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bot-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    background: rgba(255, 215, 0, 0.2);
+    color: #FFD700;
+    font-size: 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.finish-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 107, 107, 0.3) 100%);
+    color: #FFD700;
+    font-size: 11px;
+    border-radius: 5px;
+    border: 1px solid #FFD700;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    animation: finishBadgePulse 2s ease-in-out infinite;
+}
+
+@keyframes finishBadgePulse {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+    }
+}
+
+.player-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.player-row.current {
+    background: rgba(78, 205, 196, 0.3);
+    border: 2px solid #4ECDC4;
+}
+
+.player-position {
+    font-weight: bold;
+    color: #FFD700;
+    font-size: 18px;
+    min-width: 25px;
+}
+
+.player-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.player-name {
+    flex: 1;
+    color: #fff;
+    font-size: 14px;
+}
+
+.player-progress {
+    color: #4ECDC4;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Typing Area */
+#typingArea {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+    background: rgba(0, 0, 0, 0.95);
+    padding: 20px 40px;
+    border-top: 3px solid rgba(78, 205, 196, 0.5);
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#typingArea.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+#phrase {
+    font-size: 28px;
+    line-height: 2;
+    color: #fff;
+    margin-bottom: 20px;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    scroll-behavior: smooth;
+    padding: 10px 0;
+}
+
+#phrase::-webkit-scrollbar {
+    height: 8px;
+}
+
+#phrase::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+#phrase::-webkit-scrollbar-thumb {
+    background: rgba(78, 205, 196, 0.5);
+    border-radius: 10px;
+}
+
+#phrase::-webkit-scrollbar-thumb:hover {
+    background: rgba(78, 205, 196, 0.7);
+}
+
+.char.correct {
+    color: #4ECDC4;
+    background: rgba(78, 205, 196, 0.2);
+}
+
+.char-incorrect {
+    color: #FF6B6B;
+    background: rgba(255, 107, 107, 0.3);
+    text-decoration: underline;
+}
+
+.char.cursor {
+    border-bottom: 3px solid #4ECDC4;
+    animation: cursorBlink 1s infinite;
+}
+
+.char.cursor.error {
+    border-bottom-color: #FF6B6B;
+    animation: cursorBlinkError 1s infinite;
+}
+
+.char-current {
+    background: rgba(255, 215, 0, 0.3);
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% {
+        background: rgba(255, 215, 0, 0.5);
+    }
+    51%, 100% {
+        background: rgba(255, 215, 0, 0.1);
+    }
+}
+
+@keyframes cursorBlink {
+    0%, 50% {
+        border-bottom-color: #4ECDC4;
+        opacity: 1;
+    }
+    51%, 100% {
+        border-bottom-color: #4ECDC4;
+        opacity: 0.3;
+    }
+}
+
+@keyframes cursorBlinkError {
+    0%, 50% {
+        border-bottom-color: #FF6B6B;
+        opacity: 1;
+    }
+    51%, 100% {
+        border-bottom-color: #FF6B6B;
+        opacity: 0.3;
+    }
+}
+
+#progressBar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #4ECDC4, #45B7D1);
+    width: 0%;
+    transition: width 0.3s;
+    box-shadow: 0 0 10px rgba(78, 205, 196, 0.8);
+}
+
+/* Stats */
+#stats {
+    position: fixed;
+    bottom: 32%;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    z-index: 100;
+    min-width: 200px;
+    backdrop-filter: blur(10px);
+}
+
+/* User Progress Stats */
+#userProgress {
+    position: fixed;
+    top: 20px;
+    right: 300px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 15px;
+    border: 2px solid rgba(78, 205, 196, 0.3);
+    z-index: 100;
+    min-width: 180px;
+    backdrop-filter: blur(10px);
+}
+
+#userProgress h4 {
+    color: #4ECDC4;
+    font-size: 16px;
+    margin-bottom: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stat-row:last-child {
+    margin-bottom: 0;
+}
+
+.stat-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    color: #FFD700;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.progress-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.progress-stat:last-child {
+    margin-bottom: 0;
+}
+
+.progress-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.progress-value {
+    color: #4ECDC4;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #gameCanvas {
+        height: 65%;
+    }
+
+    #typingArea {
+        height: 35%;
+        padding: 15px 20px;
+    }
+
+    #ui {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    #scoreboard {
+        min-width: auto;
+        width: 100%;
+    }
+
+    #userInfo {
+        width: 100%;
+    }
+
+    #raceUsername {
+        font-size: 18px;
+    }
+
+    #phrase {
+        font-size: 20px;
+    }
+
+    #stats {
+        bottom: 37%;
+        right: 10px;
+        padding: 15px;
+        min-width: 150px;
+    }
+
+    .stat-value {
+        font-size: 20px;
+    }
+
+    #countdownNumber {
+        font-size: 120px;
+        -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.5);
+    }
+
+    #countdownOverlay {
+        height: 65%;
+    }
+
+    #raceFinishBanner h2 {
+        font-size: 32px;
+    }
+
+    #winnerName {
+        font-size: 24px;
+    }
+}
+
+/* Additional animations */
+@keyframes slideInBottom {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+#typingArea {
+    animation: slideInBottom 0.5s ease-out;
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Type Racer - Home</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+    <div class="home-page">
+        <div class="home-container">
+            <h1 class="logo"><� Type Racer <�</h1>
+            <p class="welcome">Welcome back, <strong><span id="usernameDisplay"></span></strong>!</p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="avgWpm">0</div>
+                    <div class="stat-label">Avg WPM</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="highScore">0</div>
+                    <div class="stat-label">High Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalRaces">0</div>
+                    <div class="stat-label">Races</div>
+                </div>
+            </div>
+
+            <div class="car-preview">
+                <h3>Choose Your Car Color</h3>
+                <p class="subtitle">Select a color for your racing car</p>
+                <div class="home-color-options">
+                    <div class="home-color-option" style="background: #FF6B6B;" data-color="#FF6B6B" title="Red"></div>
+                    <div class="home-color-option" style="background: #4ECDC4;" data-color="#4ECDC4" title="Teal"></div>
+                    <div class="home-color-option" style="background: #45B7D1;" data-color="#45B7D1" title="Blue"></div>
+                    <div class="home-color-option" style="background: #FFA07A;" data-color="#FFA07A" title="Orange"></div>
+                    <div class="home-color-option" style="background: #98D8C8;" data-color="#98D8C8" title="Mint"></div>
+                    <div class="home-color-option" style="background: #F7DC6F;" data-color="#F7DC6F" title="Yellow"></div>
+                    <div class="home-color-option" style="background: #BB8FCE;" data-color="#BB8FCE" title="Purple"></div>
+                    <div class="home-color-option" style="background: #FF69B4;" data-color="#FF69B4" title="Pink"></div>
+                </div>
+            </div>
+
+            <button id="startRaceBtn" class="btn btn-primary btn-large">Start Racing!</button>
+            <button id="viewRacesBtn" class="btn btn-secondary">View Race History</button>
+            <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+        </div>
+    </div>
+
+    <script src="js/home.js"></script>
+</body>
+</html>

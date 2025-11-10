@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Type Racer</title>
+    <script>
+        // Check if user is logged in
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            // Verify token and redirect to home
+            fetch('/api/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/home.html';
+                } else {
+                    localStorage.removeItem('authToken');
+                    window.location.href = '/login.html';
+                }
+            })
+            .catch(() => {
+                localStorage.removeItem('authToken');
+                window.location.href = '/login.html';
+            });
+        } else {
+            window.location.href = '/login.html';
+        }
+    </script>
+</head>
+<body>
+    <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #000; color: #fff; font-family: sans-serif;">
+        <p>Loading...</p>
+    </div>
+</body>
+</html>
